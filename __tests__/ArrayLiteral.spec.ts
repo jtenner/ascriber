@@ -20,6 +20,7 @@ describe("ArrayLiteral", () => {
     const node: ArrayLiteralExpression = call[0];
     const context: VisitorContext<ArrayLiteralExpression> = call[1];
     expect(context.node).toBe(node);
+    expect(node).toBeInstanceOf(ArrayLiteralExpression);
   });
   test("literalExpression", () => {
     expect(visitor.literalExpression.enter).toBeCalledTimes(1);

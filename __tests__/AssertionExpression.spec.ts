@@ -21,6 +21,7 @@ describe("AssertionExpression", () => {
     const node: AssertionExpression = call[0];
     const context: VisitorContext<AssertionExpression> = call[1];
     expect(context.node).toBe(node);
+    expect(node).toBeInstanceOf(AssertionExpression);
   });
   test("arrayLiteralExpression", () => {
     expect(visitor.arrayLiteralExpression.enter).toBeCalledTimes(1);

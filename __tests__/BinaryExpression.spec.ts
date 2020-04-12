@@ -20,6 +20,7 @@ describe("BinayExpressions", () => {
     const node: BinaryExpression = call[0];
     const context: VisitorContext<BinaryExpression> = call[1];
     expect(context.node).toBe(node);
+    expect(node).toBeInstanceOf(BinaryExpression);
   });
 
   test("literalExpression", () => {
