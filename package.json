@@ -8,7 +8,7 @@
     "tsc": "tsc",
     "build": "run-s prettier tsc",
     "test": "run-s build jest",
-    "jest": "jest",
+    "jest": "jest --clearCache && jest",
     "pre-commit": "run-s test"
   },
   "repository": {

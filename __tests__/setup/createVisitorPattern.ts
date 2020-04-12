@@ -5,6 +5,10 @@ export interface JestMockVisitor {
   exit: jest.Mock<any, any>;
 }
 
+export interface IVisitorMock {
+  [name: string]: VisitorObject<any> & JestMockVisitor;
+}
+
 export function createVisitorPattern(): VisitorObject<any> & JestMockVisitor {
   return {
     enter: jest.fn(),

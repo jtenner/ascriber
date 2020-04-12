@@ -1,9 +1,12 @@
 import { compile } from "./setup/compile";
-import { createVisitorPattern } from "./setup/createVisitorPattern";
+import {
+  createVisitorPattern,
+  IVisitorMock,
+} from "./setup/createVisitorPattern";
 import { BinaryExpression } from "assemblyscript";
 import { VisitorContext } from "../src";
 
-const visitor = {
+const visitor: IVisitorMock = {
   binaryExpression: createVisitorPattern(),
   literalExpression: createVisitorPattern(),
   expression: createVisitorPattern(),
