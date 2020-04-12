@@ -780,6 +780,7 @@ export class Visitor {
         }
 
         case NodeKind.BINARY: {
+          console.log("Hit!");
           const binaryExpression = node as BinaryExpression;
           this.enter(visitor.binaryExpression, binaryExpression, context);
           this.traverse(visitor, binaryExpression.left, context);

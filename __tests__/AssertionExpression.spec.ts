@@ -1,5 +1,7 @@
 import { compile } from "./setup/compile";
 import { createVisitorPattern } from "./setup/createVisitorPattern";
+import { AssertionExpression } from "assemblyscript";
+import { VisitorContext } from "../src";
 
 const visitor = {
   arrayLiteralExpression: createVisitorPattern(),
@@ -15,6 +17,10 @@ describe("AssertionExpression", () => {
   test("assertionExpression", () => {
     expect(visitor.assertionExpression.enter).toBeCalledTimes(1);
     expect(visitor.assertionExpression.exit).toBeCalledTimes(1);
+    const call = visitor.assertionExpression.enter.mock.calls[0];
+    const node: AssertionExpression = call[0];
+    const context: VisitorContext<AssertionExpression> = call[1];
+    expect(context.node).toBe(node);
   });
   test("arrayLiteralExpression", () => {
     expect(visitor.arrayLiteralExpression.enter).toBeCalledTimes(1);
