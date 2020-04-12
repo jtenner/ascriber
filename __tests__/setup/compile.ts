@@ -5,10 +5,10 @@ export function compile(
   source: string,
   visitor: Partial<IVisitorObject>,
 ): void {
-  const program = {
+  const program = ({
     sources: [],
     diagnostics: [],
-  } as unknown as Program;
+  } as unknown) as Program;
   const parser = new Parser(program);
   parser.parseFile(source, "source.ts", true);
   const visitorInstance = new Visitor();

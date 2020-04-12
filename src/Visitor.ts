@@ -230,7 +230,11 @@ export class Visitor {
             );
             this.traverse(visitor, indexSignatureDeclaration.name, context);
             this.traverse(visitor, indexSignatureDeclaration.keyType, context);
-            this.traverse(visitor, indexSignatureDeclaration.valueType, context);
+            this.traverse(
+              visitor,
+              indexSignatureDeclaration.valueType,
+              context,
+            );
             if (indexSignatureDeclaration.decorators) {
               for (const decorator of indexSignatureDeclaration.decorators) {
                 this.traverse(visitor, decorator, context);
@@ -243,7 +247,7 @@ export class Visitor {
             );
             break;
           }
-          
+
           case NodeKind.CLASSDECLARATION: {
             const classDeclaration = node as ClassDeclaration;
             this.enter(visitor.classDeclaration, classDeclaration, context);
@@ -290,7 +294,11 @@ export class Visitor {
 
           case NodeKind.FUNCTIONDECLARATION: {
             const functionDeclaration = node as FunctionDeclaration;
-            this.enter(visitor.functionDeclaration, functionDeclaration, context);
+            this.enter(
+              visitor.functionDeclaration,
+              functionDeclaration,
+              context,
+            );
             this.traverse(visitor, functionDeclaration.name, context);
             if (functionDeclaration.typeParameters) {
               for (const typeParameter of functionDeclaration.typeParameters) {
@@ -300,7 +308,11 @@ export class Visitor {
             this.traverse(visitor, functionDeclaration.signature, context);
             if (functionDeclaration.body)
               this.traverse(visitor, functionDeclaration.body, context);
-            this.exit(visitor.functionDeclaration, functionDeclaration, context);
+            this.exit(
+              visitor.functionDeclaration,
+              functionDeclaration,
+              context,
+            );
             break;
           }
 
@@ -320,11 +332,7 @@ export class Visitor {
 
           case NodeKind.INTERFACEDECLARATION: {
             const interfaceDeclaration = node as InterfaceDeclaration;
-            this.enter(
-              visitor.classDeclaration,
-              interfaceDeclaration,
-              context,
-            );
+            this.enter(visitor.classDeclaration, interfaceDeclaration, context);
             this.enter(
               visitor.interfaceDeclaration,
               interfaceDeclaration,
@@ -351,11 +359,7 @@ export class Visitor {
               interfaceDeclaration,
               context,
             );
-            this.exit(
-              visitor.classDeclaration,
-              interfaceDeclaration,
-              context,
-            );
+            this.exit(visitor.classDeclaration, interfaceDeclaration, context);
             break;
           }
 
@@ -423,16 +427,25 @@ export class Visitor {
             break;
           }
 
-          default: throw new TypeError("Invalid node type.");
+          default:
+            throw new TypeError("Invalid node type.");
         }
         this.exit(visitor.declarationStatement, node, context);
       } else {
         switch (node.kind) {
           case NodeKind.EXPRESSION: {
             const expressionStatement = node as ExpressionStatement;
-            this.enter(visitor.expressionStatement, expressionStatement, context);
+            this.enter(
+              visitor.expressionStatement,
+              expressionStatement,
+              context,
+            );
             this.traverse(visitor, expressionStatement.expression, context);
-            this.exit(visitor.expressionStatement, expressionStatement, context);
+            this.exit(
+              visitor.expressionStatement,
+              expressionStatement,
+              context,
+            );
             break;
           }
 
@@ -675,13 +688,21 @@ export class Visitor {
 
           case NodeKind.VARIABLEDECLARATION: {
             const variableDeclaration = node as VariableDeclaration;
-            this.enter(visitor.variableDeclaration, variableDeclaration, context);
+            this.enter(
+              visitor.variableDeclaration,
+              variableDeclaration,
+              context,
+            );
             this.traverse(visitor, variableDeclaration.name, context);
             if (variableDeclaration.type)
               this.traverse(visitor, variableDeclaration.type, context);
             if (variableDeclaration.initializer)
               this.traverse(visitor, variableDeclaration.initializer, context);
-            this.exit(visitor.variableDeclaration, variableDeclaration, context);
+            this.exit(
+              visitor.variableDeclaration,
+              variableDeclaration,
+              context,
+            );
             break;
           }
 
