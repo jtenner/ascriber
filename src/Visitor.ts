@@ -74,6 +74,7 @@ import {
   VariableDeclaration,
   VariableStatement,
   WhileStatement,
+  DeclarationStatement,
 } from "assemblyscript";
 import { VisitorContext } from "./VisitorContext";
 
@@ -103,6 +104,7 @@ export interface IVisitorObject {
   commaExpression: VisitorPattern<CommaExpression>;
   constructorExpression: VisitorPattern<ConstructorExpression>;
   continueStatement: VisitorPattern<ContinueStatement>;
+  declarationStatement: VisitorPattern<DeclarationStatement>;
   decoratorNode: VisitorPattern<DecoratorNode>;
   doStatement: VisitorPattern<DoStatement>;
   elementAccessExpression: VisitorPattern<ElementAccessExpression>;
@@ -216,468 +218,485 @@ export class Visitor {
       return;
     } else if (node instanceof Statement) {
       this.enter(visitor.statement, node, context);
-
-      switch (node.kind) {
-        case NodeKind.EXPRESSION: {
-          const expressionStatement = node as ExpressionStatement;
-          this.enter(visitor.expressionStatement, expressionStatement, context);
-          this.traverse(visitor, expressionStatement.expression, context);
-          this.exit(visitor.expressionStatement, expressionStatement, context);
-          break;
-        }
-
-        case NodeKind.BLOCK: {
-          const blockStatement = node as BlockStatement;
-          this.enter(visitor.blockStatement, blockStatement, context);
-          const block = <BlockStatement>node;
-          for (const statement of block.statements) {
-            this.traverse(visitor, statement, context);
-          }
-          this.exit(visitor.blockStatement, blockStatement, context);
-          break;
-        }
-
-        case NodeKind.BREAK: {
-          const breakStatement = node as BreakStatement;
-          this.enter(visitor.breakStatement, breakStatement, context);
-          this.exit(visitor.breakStatement, breakStatement, context);
-          break;
-        }
-
-        case NodeKind.CLASSDECLARATION: {
-          const classDeclaration = node as ClassDeclaration;
-          this.enter(visitor.classDeclaration, classDeclaration, context);
-          this.traverse(visitor, classDeclaration.name, context);
-          if (classDeclaration.decorators) {
-            for (const decorator of classDeclaration.decorators) {
-              this.traverse(visitor, decorator, context);
+      if (node instanceof DeclarationStatement) {
+        this.enter(visitor.declarationStatement, node, context);
+        switch (node.kind) {
+          case NodeKind.INDEXSIGNATUREDECLARATION: {
+            const indexSignatureDeclaration = node as IndexSignatureDeclaration;
+            this.enter(
+              visitor.indexSignatureDeclaration,
+              indexSignatureDeclaration,
+              context,
+            );
+            this.traverse(visitor, indexSignatureDeclaration.name, context);
+            this.traverse(visitor, indexSignatureDeclaration.keyType, context);
+            this.traverse(visitor, indexSignatureDeclaration.valueType, context);
+            if (indexSignatureDeclaration.decorators) {
+              for (const decorator of indexSignatureDeclaration.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
             }
+            this.exit(
+              visitor.indexSignatureDeclaration,
+              indexSignatureDeclaration,
+              context,
+            );
+            break;
           }
-          if (classDeclaration.typeParameters) {
-            for (const typeParameter of classDeclaration.typeParameters) {
-              this.traverse(visitor, typeParameter, context);
+          
+          case NodeKind.CLASSDECLARATION: {
+            const classDeclaration = node as ClassDeclaration;
+            this.enter(visitor.classDeclaration, classDeclaration, context);
+            this.traverse(visitor, classDeclaration.name, context);
+            if (classDeclaration.decorators) {
+              for (const decorator of classDeclaration.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
             }
-          }
-          if (classDeclaration.extendsType)
-            this.traverse(visitor, classDeclaration.extendsType, context);
-          if (classDeclaration.implementsTypes) {
-            for (const implementsType of classDeclaration.implementsTypes) {
-              this.traverse(visitor, implementsType, context);
+            if (classDeclaration.typeParameters) {
+              for (const typeParameter of classDeclaration.typeParameters) {
+                this.traverse(visitor, typeParameter, context);
+              }
             }
-          }
-          for (const member of classDeclaration.members) {
-            this.traverse(visitor, member, context);
-          }
-          this.exit(visitor.classDeclaration, classDeclaration, context);
-          break;
-        }
-
-        case NodeKind.CONTINUE: {
-          const continueStatement = node as ContinueStatement;
-          this.enter(visitor.continueStatement, continueStatement, context);
-          this.exit(visitor.continueStatement, continueStatement, context);
-          break;
-        }
-
-        case NodeKind.DO: {
-          const doStatement = node as DoStatement;
-          this.enter(visitor.doStatement, doStatement, context);
-          this.traverse(visitor, doStatement.condition, context);
-          this.traverse(visitor, doStatement.statement, context);
-          this.exit(visitor.doStatement, doStatement, context);
-          break;
-        }
-
-        case NodeKind.EMPTY: {
-          const emptyStatement = node as EmptyStatement;
-          this.enter(visitor.emptyStatement, emptyStatement, context);
-          this.exit(visitor.emptyStatement, emptyStatement, context);
-          break;
-        }
-
-        case NodeKind.ENUMDECLARATION: {
-          const enumDeclaration = node as EnumDeclaration;
-          this.enter(visitor.enumDeclaration, enumDeclaration, context);
-          this.traverse(visitor, enumDeclaration.name, context);
-          if (enumDeclaration.decorators) {
-            for (const decorator of enumDeclaration.decorators) {
-              this.traverse(visitor, decorator, context);
+            if (classDeclaration.extendsType)
+              this.traverse(visitor, classDeclaration.extendsType, context);
+            if (classDeclaration.implementsTypes) {
+              for (const implementsType of classDeclaration.implementsTypes) {
+                this.traverse(visitor, implementsType, context);
+              }
             }
-          }
-          for (const value of enumDeclaration.values) {
-            this.traverse(visitor, value, context);
-          }
-          this.exit(visitor.enumDeclaration, enumDeclaration, context);
-          break;
-        }
-
-        case NodeKind.ENUMVALUEDECLARATION: {
-          const enumValueDeclaration = node as EnumValueDeclaration;
-          this.enter(
-            visitor.enumValueDeclaration,
-            enumValueDeclaration,
-            context,
-          );
-          this.traverse(visitor, enumValueDeclaration.name, context);
-          if (enumValueDeclaration.initializer)
-            this.traverse(visitor, enumValueDeclaration.initializer, context);
-          this.exit(
-            visitor.enumValueDeclaration,
-            enumValueDeclaration,
-            context,
-          );
-          break;
-        }
-
-        case NodeKind.EXPORT: {
-          const exportStatement = node as ExportStatement;
-          this.enter(visitor.exportStatement, exportStatement, context);
-          if (exportStatement.path)
-            this.traverse(visitor, exportStatement.path, context);
-          if (exportStatement.members) {
-            for (const member of exportStatement.members) {
+            for (const member of classDeclaration.members) {
               this.traverse(visitor, member, context);
             }
+            this.exit(visitor.classDeclaration, classDeclaration, context);
+            break;
           }
-          this.exit(visitor.exportStatement, exportStatement, context);
-          break;
-        }
 
-        case NodeKind.EXPORTDEFAULT: {
-          const exportDefaultStatement = node as ExportDefaultStatement;
-          this.enter(
-            visitor.exportDefaultStatement,
-            exportDefaultStatement,
-            context,
-          );
-          this.traverse(visitor, exportDefaultStatement.declaration, context);
-          this.exit(
-            visitor.exportDefaultStatement,
-            exportDefaultStatement,
-            context,
-          );
-          break;
-        }
-
-        case NodeKind.EXPORTIMPORT: {
-          const exportImportStatement = node as ExportImportStatement;
-          this.enter(
-            visitor.exportImportStatement,
-            exportImportStatement,
-            context,
-          );
-          this.traverse(visitor, exportImportStatement.name, context);
-          this.traverse(visitor, exportImportStatement.externalName, context);
-          this.exit(
-            visitor.exportImportStatement,
-            exportImportStatement,
-            context,
-          );
-          break;
-        }
-
-        case NodeKind.FOR: {
-          const forStatement = node as ForStatement;
-          this.enter(visitor.forStatement, forStatement, context);
-          if (forStatement.initializer)
-            this.traverse(visitor, forStatement.initializer, context);
-          if (forStatement.condition)
-            this.traverse(visitor, forStatement.condition, context);
-          if (forStatement.incrementor)
-            this.traverse(visitor, forStatement.incrementor, context);
-          this.traverse(visitor, forStatement.statement, context);
-          this.exit(visitor.forStatement, forStatement, context);
-          break;
-        }
-
-        case NodeKind.FOROF: {
-          const forOfStatement = node as ForOfStatement;
-          this.enter(visitor.forOfStatement, forOfStatement, context);
-          this.traverse(visitor, forOfStatement.iterable, context);
-          this.traverse(visitor, forOfStatement.variable, context);
-          this.traverse(visitor, forOfStatement.statement, context);
-          this.exit(visitor.forOfStatement, forOfStatement, context);
-          break;
-        }
-
-        case NodeKind.FUNCTIONDECLARATION: {
-          const functionDeclaration = node as FunctionDeclaration;
-          this.enter(visitor.functionDeclaration, functionDeclaration, context);
-          this.traverse(visitor, functionDeclaration.name, context);
-          if (functionDeclaration.typeParameters) {
-            for (const typeParameter of functionDeclaration.typeParameters) {
-              this.traverse(visitor, typeParameter, context);
+          case NodeKind.ENUMDECLARATION: {
+            const enumDeclaration = node as EnumDeclaration;
+            this.enter(visitor.enumDeclaration, enumDeclaration, context);
+            this.traverse(visitor, enumDeclaration.name, context);
+            if (enumDeclaration.decorators) {
+              for (const decorator of enumDeclaration.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
             }
-          }
-          this.traverse(visitor, functionDeclaration.signature, context);
-          if (functionDeclaration.body)
-            this.traverse(visitor, functionDeclaration.body, context);
-          this.exit(visitor.functionDeclaration, functionDeclaration, context);
-          break;
-        }
-
-        case NodeKind.FIELDDECLARATION: {
-          const fieldDeclaration = node as FieldDeclaration;
-          this.enter(visitor.fieldDeclaration, fieldDeclaration, context);
-          this.traverse(visitor, fieldDeclaration.name, context);
-          if (fieldDeclaration.type)
-            this.traverse(visitor, fieldDeclaration.type, context);
-          if (fieldDeclaration.initializer)
-            this.traverse(visitor, fieldDeclaration.initializer, context);
-          if (fieldDeclaration.decorators) {
-            for (const decorator of fieldDeclaration.decorators) {
-              this.traverse(visitor, decorator, context);
+            for (const value of enumDeclaration.values) {
+              this.traverse(visitor, value, context);
             }
+            this.exit(visitor.enumDeclaration, enumDeclaration, context);
+            break;
           }
-          this.exit(visitor.fieldDeclaration, fieldDeclaration, context);
-          break;
-        }
 
-        case NodeKind.IF: {
-          const ifStatement = node as IfStatement;
-          this.enter(visitor.ifStatement, ifStatement, context);
-          this.traverse(visitor, ifStatement.condition, context);
-          this.traverse(visitor, ifStatement.ifTrue, context);
-          if (ifStatement.ifFalse)
+          case NodeKind.FUNCTIONDECLARATION: {
+            const functionDeclaration = node as FunctionDeclaration;
+            this.enter(visitor.functionDeclaration, functionDeclaration, context);
+            this.traverse(visitor, functionDeclaration.name, context);
+            if (functionDeclaration.typeParameters) {
+              for (const typeParameter of functionDeclaration.typeParameters) {
+                this.traverse(visitor, typeParameter, context);
+              }
+            }
+            this.traverse(visitor, functionDeclaration.signature, context);
+            if (functionDeclaration.body)
+              this.traverse(visitor, functionDeclaration.body, context);
+            this.exit(visitor.functionDeclaration, functionDeclaration, context);
+            break;
+          }
+
+          case NodeKind.IMPORTDECLARATION: {
+            const importDeclaration = node as ImportDeclaration;
+            this.enter(visitor.importDeclaration, importDeclaration, context);
+            this.traverse(visitor, importDeclaration.foreignName, context);
+            this.traverse(visitor, importDeclaration.name, context);
+            if (importDeclaration.decorators) {
+              for (const decorator of importDeclaration.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
+            }
+            this.exit(visitor.importDeclaration, importDeclaration, context);
+            break;
+          }
+
+          case NodeKind.INTERFACEDECLARATION: {
+            const interfaceDeclaration = node as InterfaceDeclaration;
+            this.enter(
+              visitor.classDeclaration,
+              interfaceDeclaration,
+              context,
+            );
+            this.enter(
+              visitor.interfaceDeclaration,
+              interfaceDeclaration,
+              context,
+            );
+            this.traverse(visitor, interfaceDeclaration.name, context);
+            if (interfaceDeclaration.decorators) {
+              for (const decorator of interfaceDeclaration.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
+            }
+            if (interfaceDeclaration.implementsTypes) {
+              for (const implementsType of interfaceDeclaration.implementsTypes) {
+                this.traverse(visitor, implementsType, context);
+              }
+            }
+            if (interfaceDeclaration.extendsType)
+              this.traverse(visitor, interfaceDeclaration.extendsType, context);
+            for (const member of interfaceDeclaration.members) {
+              this.traverse(visitor, member, context);
+            }
+            this.exit(
+              visitor.interfaceDeclaration,
+              interfaceDeclaration,
+              context,
+            );
+            this.exit(
+              visitor.classDeclaration,
+              interfaceDeclaration,
+              context,
+            );
+            break;
+          }
+
+          case NodeKind.METHODDECLARATION: {
+            const methodDeclaration = node as MethodDeclaration;
+            this.enter(visitor.methodDeclaration, methodDeclaration, context);
+            this.traverse(visitor, methodDeclaration.name, context);
+            if (methodDeclaration.typeParameters) {
+              for (const typeParameter of methodDeclaration.typeParameters) {
+                this.traverse(visitor, typeParameter, context);
+              }
+            }
+            this.traverse(visitor, methodDeclaration.signature, context);
+            if (methodDeclaration.decorators) {
+              for (const decorator of methodDeclaration.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
+            }
+            if (methodDeclaration.body)
+              this.traverse(visitor, methodDeclaration.body, context);
+            this.exit(visitor.methodDeclaration, methodDeclaration, context);
+            break;
+          }
+
+          case NodeKind.NAMESPACEDECLARATION: {
+            const namespaceDeclaration = node as NamespaceDeclaration;
+            this.enter(
+              visitor.namespaceDeclaration,
+              namespaceDeclaration,
+              context,
+            );
+            this.traverse(visitor, namespaceDeclaration.name, context);
+            if (namespaceDeclaration.decorators) {
+              for (const decorator of namespaceDeclaration.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
+            }
+            for (const member of namespaceDeclaration.members) {
+              this.traverse(visitor, member, context);
+            }
+            this.exit(
+              visitor.namespaceDeclaration,
+              namespaceDeclaration,
+              context,
+            );
+            break;
+          }
+
+          case NodeKind.TYPEDECLARATION: {
+            const typeDeclaration = node as TypeDeclaration;
+            this.enter(visitor.typeDeclaration, typeDeclaration, context);
+            this.traverse(visitor, typeDeclaration.name, context);
+            this.traverse(visitor, typeDeclaration.type, context);
+            if (typeDeclaration.decorators) {
+              for (const decorator of typeDeclaration.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
+            }
+            if (typeDeclaration.typeParameters) {
+              for (const typeParameter of typeDeclaration.typeParameters) {
+                this.traverse(visitor, typeParameter, context);
+              }
+            }
+            this.exit(visitor.typeDeclaration, typeDeclaration, context);
+            break;
+          }
+
+          default: throw new TypeError("Invalid node type.");
+        }
+        this.exit(visitor.declarationStatement, node, context);
+      } else {
+        switch (node.kind) {
+          case NodeKind.EXPRESSION: {
+            const expressionStatement = node as ExpressionStatement;
+            this.enter(visitor.expressionStatement, expressionStatement, context);
+            this.traverse(visitor, expressionStatement.expression, context);
+            this.exit(visitor.expressionStatement, expressionStatement, context);
+            break;
+          }
+
+          case NodeKind.BLOCK: {
+            const blockStatement = node as BlockStatement;
+            this.enter(visitor.blockStatement, blockStatement, context);
+            const block = <BlockStatement>node;
+            for (const statement of block.statements) {
+              this.traverse(visitor, statement, context);
+            }
+            this.exit(visitor.blockStatement, blockStatement, context);
+            break;
+          }
+
+          case NodeKind.BREAK: {
+            const breakStatement = node as BreakStatement;
+            this.enter(visitor.breakStatement, breakStatement, context);
+            this.exit(visitor.breakStatement, breakStatement, context);
+            break;
+          }
+
+          case NodeKind.CONTINUE: {
+            const continueStatement = node as ContinueStatement;
+            this.enter(visitor.continueStatement, continueStatement, context);
+            this.exit(visitor.continueStatement, continueStatement, context);
+            break;
+          }
+
+          case NodeKind.DO: {
+            const doStatement = node as DoStatement;
+            this.enter(visitor.doStatement, doStatement, context);
+            this.traverse(visitor, doStatement.condition, context);
+            this.traverse(visitor, doStatement.statement, context);
+            this.exit(visitor.doStatement, doStatement, context);
+            break;
+          }
+
+          case NodeKind.EMPTY: {
+            const emptyStatement = node as EmptyStatement;
+            this.enter(visitor.emptyStatement, emptyStatement, context);
+            this.exit(visitor.emptyStatement, emptyStatement, context);
+            break;
+          }
+
+          case NodeKind.ENUMVALUEDECLARATION: {
+            const enumValueDeclaration = node as EnumValueDeclaration;
+            this.enter(
+              visitor.enumValueDeclaration,
+              enumValueDeclaration,
+              context,
+            );
+            this.traverse(visitor, enumValueDeclaration.name, context);
+            if (enumValueDeclaration.initializer)
+              this.traverse(visitor, enumValueDeclaration.initializer, context);
+            this.exit(
+              visitor.enumValueDeclaration,
+              enumValueDeclaration,
+              context,
+            );
+            break;
+          }
+
+          case NodeKind.EXPORT: {
+            const exportStatement = node as ExportStatement;
+            this.enter(visitor.exportStatement, exportStatement, context);
+            if (exportStatement.path)
+              this.traverse(visitor, exportStatement.path, context);
+            if (exportStatement.members) {
+              for (const member of exportStatement.members) {
+                this.traverse(visitor, member, context);
+              }
+            }
+            this.exit(visitor.exportStatement, exportStatement, context);
+            break;
+          }
+
+          case NodeKind.EXPORTDEFAULT: {
+            const exportDefaultStatement = node as ExportDefaultStatement;
+            this.enter(
+              visitor.exportDefaultStatement,
+              exportDefaultStatement,
+              context,
+            );
+            this.traverse(visitor, exportDefaultStatement.declaration, context);
+            this.exit(
+              visitor.exportDefaultStatement,
+              exportDefaultStatement,
+              context,
+            );
+            break;
+          }
+
+          case NodeKind.EXPORTIMPORT: {
+            const exportImportStatement = node as ExportImportStatement;
+            this.enter(
+              visitor.exportImportStatement,
+              exportImportStatement,
+              context,
+            );
+            this.traverse(visitor, exportImportStatement.name, context);
+            this.traverse(visitor, exportImportStatement.externalName, context);
+            this.exit(
+              visitor.exportImportStatement,
+              exportImportStatement,
+              context,
+            );
+            break;
+          }
+
+          case NodeKind.FOR: {
+            const forStatement = node as ForStatement;
+            this.enter(visitor.forStatement, forStatement, context);
+            if (forStatement.initializer)
+              this.traverse(visitor, forStatement.initializer, context);
+            if (forStatement.condition)
+              this.traverse(visitor, forStatement.condition, context);
+            if (forStatement.incrementor)
+              this.traverse(visitor, forStatement.incrementor, context);
+            this.traverse(visitor, forStatement.statement, context);
+            this.exit(visitor.forStatement, forStatement, context);
+            break;
+          }
+
+          case NodeKind.FOROF: {
+            const forOfStatement = node as ForOfStatement;
+            this.enter(visitor.forOfStatement, forOfStatement, context);
+            this.traverse(visitor, forOfStatement.iterable, context);
+            this.traverse(visitor, forOfStatement.variable, context);
+            this.traverse(visitor, forOfStatement.statement, context);
+            this.exit(visitor.forOfStatement, forOfStatement, context);
+            break;
+          }
+
+          case NodeKind.FIELDDECLARATION: {
+            const fieldDeclaration = node as FieldDeclaration;
+            this.enter(visitor.fieldDeclaration, fieldDeclaration, context);
+            this.traverse(visitor, fieldDeclaration.name, context);
+            if (fieldDeclaration.type)
+              this.traverse(visitor, fieldDeclaration.type, context);
+            if (fieldDeclaration.initializer)
+              this.traverse(visitor, fieldDeclaration.initializer, context);
+            if (fieldDeclaration.decorators) {
+              for (const decorator of fieldDeclaration.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
+            }
+            this.exit(visitor.fieldDeclaration, fieldDeclaration, context);
+            break;
+          }
+
+          case NodeKind.IF: {
+            const ifStatement = node as IfStatement;
+            this.enter(visitor.ifStatement, ifStatement, context);
+            this.traverse(visitor, ifStatement.condition, context);
             this.traverse(visitor, ifStatement.ifTrue, context);
-          this.exit(visitor.ifStatement, ifStatement, context);
-          break;
-        }
+            if (ifStatement.ifFalse)
+              this.traverse(visitor, ifStatement.ifTrue, context);
+            this.exit(visitor.ifStatement, ifStatement, context);
+            break;
+          }
 
-        case NodeKind.IMPORT: {
-          const importStatement = node as ImportStatement;
-          this.enter(visitor.importStatement, importStatement, context);
-          if (importStatement.namespaceName)
-            this.traverse(visitor, importStatement.namespaceName, context);
-          if (importStatement.declarations) {
-            for (const declaration of importStatement.declarations) {
+          case NodeKind.IMPORT: {
+            const importStatement = node as ImportStatement;
+            this.enter(visitor.importStatement, importStatement, context);
+            if (importStatement.namespaceName)
+              this.traverse(visitor, importStatement.namespaceName, context);
+            if (importStatement.declarations) {
+              for (const declaration of importStatement.declarations) {
+                this.traverse(visitor, declaration, context);
+              }
+            }
+            this.exit(visitor.importStatement, importStatement, context);
+            break;
+          }
+
+          case NodeKind.RETURN: {
+            const returnStatement = node as ReturnStatement;
+            this.enter(visitor.returnStatement, returnStatement, context);
+            if (returnStatement.value)
+              this.traverse(visitor, returnStatement.value, context);
+            this.exit(visitor.returnStatement, returnStatement, context);
+            break;
+          }
+
+          case NodeKind.SWITCH: {
+            const switchStatement = node as SwitchStatement;
+            this.enter(visitor.switchStatement, switchStatement, context);
+            this.traverse(visitor, switchStatement.condition, context);
+            for (const caseStatement of switchStatement.cases) {
+              this.traverse(visitor, caseStatement, context);
+            }
+            this.exit(visitor.switchStatement, switchStatement, context);
+            break;
+          }
+
+          case NodeKind.THROW: {
+            const throwStatement = node as ThrowStatement;
+            this.enter(visitor.throwStatement, throwStatement, context);
+            this.traverse(visitor, throwStatement.value, context);
+            this.exit(visitor.throwStatement, throwStatement, context);
+            break;
+          }
+
+          case NodeKind.TRY: {
+            const tryStatement = node as TryStatement;
+            this.enter(visitor.tryStatement, tryStatement, context);
+            for (const statement of tryStatement.statements) {
+              this.traverse(visitor, statement, context);
+            }
+            if (tryStatement.catchVariable)
+              this.traverse(visitor, tryStatement.catchVariable, context);
+            if (tryStatement.catchStatements) {
+              for (const statement of tryStatement.catchStatements) {
+                this.traverse(visitor, statement, context);
+              }
+            }
+            if (tryStatement.finallyStatements) {
+              for (const statement of tryStatement.finallyStatements) {
+                this.traverse(visitor, statement, context);
+              }
+            }
+            this.exit(visitor.tryStatement, tryStatement, context);
+            break;
+          }
+
+          case NodeKind.VARIABLE: {
+            const variableStatement = node as VariableStatement;
+            this.enter(visitor.variableStatement, variableStatement, context);
+            if (variableStatement.decorators) {
+              for (const decorator of variableStatement.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
+            }
+            for (const declaration of variableStatement.declarations) {
               this.traverse(visitor, declaration, context);
             }
+            this.exit(visitor.variableStatement, variableStatement, context);
+            break;
           }
-          this.exit(visitor.importStatement, importStatement, context);
-          break;
-        }
 
-        case NodeKind.IMPORTDECLARATION: {
-          const importDeclaration = node as ImportDeclaration;
-          this.enter(visitor.importDeclaration, importDeclaration, context);
-          this.traverse(visitor, importDeclaration.foreignName, context);
-          this.traverse(visitor, importDeclaration.name, context);
-          if (importDeclaration.decorators) {
-            for (const decorator of importDeclaration.decorators) {
-              this.traverse(visitor, decorator, context);
-            }
+          case NodeKind.VARIABLEDECLARATION: {
+            const variableDeclaration = node as VariableDeclaration;
+            this.enter(visitor.variableDeclaration, variableDeclaration, context);
+            this.traverse(visitor, variableDeclaration.name, context);
+            if (variableDeclaration.type)
+              this.traverse(visitor, variableDeclaration.type, context);
+            if (variableDeclaration.initializer)
+              this.traverse(visitor, variableDeclaration.initializer, context);
+            this.exit(visitor.variableDeclaration, variableDeclaration, context);
+            break;
           }
-          this.exit(visitor.importDeclaration, importDeclaration, context);
-          break;
-        }
 
-        case NodeKind.INDEXSIGNATUREDECLARATION: {
-          const indexSignatureDeclaration = node as IndexSignatureDeclaration;
-          this.enter(
-            visitor.indexSignatureDeclaration,
-            indexSignatureDeclaration,
-            context,
-          );
-          this.traverse(visitor, indexSignatureDeclaration.name, context);
-          this.traverse(visitor, indexSignatureDeclaration.keyType, context);
-          this.traverse(visitor, indexSignatureDeclaration.valueType, context);
-          if (indexSignatureDeclaration.decorators) {
-            for (const decorator of indexSignatureDeclaration.decorators) {
-              this.traverse(visitor, decorator, context);
-            }
+          case NodeKind.WHILE: {
+            const whileStatement = node as WhileStatement;
+            this.enter(visitor.whileStatement, whileStatement, context);
+            this.traverse(visitor, whileStatement.condition, context);
+            this.traverse(visitor, whileStatement.statement, context);
+            this.exit(visitor.whileStatement, whileStatement, context);
+            break;
           }
-          this.exit(
-            visitor.indexSignatureDeclaration,
-            indexSignatureDeclaration,
-            context,
-          );
-          break;
-        }
 
-        case NodeKind.INTERFACEDECLARATION: {
-          const interfaceDeclaration = node as InterfaceDeclaration;
-          this.enter(
-            visitor.interfaceDeclaration,
-            interfaceDeclaration,
-            context,
-          );
-          this.traverse(visitor, interfaceDeclaration.name, context);
-          if (interfaceDeclaration.decorators) {
-            for (const decorator of interfaceDeclaration.decorators) {
-              this.traverse(visitor, decorator, context);
-            }
-          }
-          if (interfaceDeclaration.implementsTypes) {
-            for (const implementsType of interfaceDeclaration.implementsTypes) {
-              this.traverse(visitor, implementsType, context);
-            }
-          }
-          if (interfaceDeclaration.extendsType)
-            this.traverse(visitor, interfaceDeclaration.extendsType, context);
-          for (const member of interfaceDeclaration.members) {
-            this.traverse(visitor, member, context);
-          }
-          this.exit(
-            visitor.interfaceDeclaration,
-            interfaceDeclaration,
-            context,
-          );
-          break;
+          default:
+            throw new TypeError("Invalid node type.");
         }
-
-        case NodeKind.METHODDECLARATION: {
-          const methodDeclaration = node as MethodDeclaration;
-          this.enter(visitor.methodDeclaration, methodDeclaration, context);
-          this.traverse(visitor, methodDeclaration.name, context);
-          if (methodDeclaration.typeParameters) {
-            for (const typeParameter of methodDeclaration.typeParameters) {
-              this.traverse(visitor, typeParameter, context);
-            }
-          }
-          this.traverse(visitor, methodDeclaration.signature, context);
-          if (methodDeclaration.decorators) {
-            for (const decorator of methodDeclaration.decorators) {
-              this.traverse(visitor, decorator, context);
-            }
-          }
-          if (methodDeclaration.body)
-            this.traverse(visitor, methodDeclaration.body, context);
-          this.exit(visitor.methodDeclaration, methodDeclaration, context);
-          break;
-        }
-
-        case NodeKind.NAMESPACEDECLARATION: {
-          const namespaceDeclaration = node as NamespaceDeclaration;
-          this.enter(
-            visitor.namespaceDeclaration,
-            namespaceDeclaration,
-            context,
-          );
-          this.traverse(visitor, namespaceDeclaration.name, context);
-          if (namespaceDeclaration.decorators) {
-            for (const decorator of namespaceDeclaration.decorators) {
-              this.traverse(visitor, decorator, context);
-            }
-          }
-          for (const member of namespaceDeclaration.members) {
-            this.traverse(visitor, member, context);
-          }
-          this.exit(
-            visitor.namespaceDeclaration,
-            namespaceDeclaration,
-            context,
-          );
-          break;
-        }
-
-        case NodeKind.RETURN: {
-          const returnStatement = node as ReturnStatement;
-          this.enter(visitor.returnStatement, returnStatement, context);
-          if (returnStatement.value)
-            this.traverse(visitor, returnStatement.value, context);
-          this.exit(visitor.returnStatement, returnStatement, context);
-          break;
-        }
-
-        case NodeKind.SWITCH: {
-          const switchStatement = node as SwitchStatement;
-          this.enter(visitor.switchStatement, switchStatement, context);
-          this.traverse(visitor, switchStatement.condition, context);
-          for (const caseStatement of switchStatement.cases) {
-            this.traverse(visitor, caseStatement, context);
-          }
-          this.exit(visitor.switchStatement, switchStatement, context);
-          break;
-        }
-
-        case NodeKind.THROW: {
-          const throwStatement = node as ThrowStatement;
-          this.enter(visitor.throwStatement, throwStatement, context);
-          this.traverse(visitor, throwStatement.value, context);
-          this.exit(visitor.throwStatement, throwStatement, context);
-          break;
-        }
-
-        case NodeKind.TRY: {
-          const tryStatement = node as TryStatement;
-          this.enter(visitor.tryStatement, tryStatement, context);
-          for (const statement of tryStatement.statements) {
-            this.traverse(visitor, statement, context);
-          }
-          if (tryStatement.catchVariable)
-            this.traverse(visitor, tryStatement.catchVariable, context);
-          if (tryStatement.catchStatements) {
-            for (const statement of tryStatement.catchStatements) {
-              this.traverse(visitor, statement, context);
-            }
-          }
-          if (tryStatement.finallyStatements) {
-            for (const statement of tryStatement.finallyStatements) {
-              this.traverse(visitor, statement, context);
-            }
-          }
-          this.exit(visitor.tryStatement, tryStatement, context);
-          break;
-        }
-
-        case NodeKind.TYPEDECLARATION: {
-          const typeDeclaration = node as TypeDeclaration;
-          this.enter(visitor.typeDeclaration, typeDeclaration, context);
-          this.traverse(visitor, typeDeclaration.name, context);
-          this.traverse(visitor, typeDeclaration.type, context);
-          if (typeDeclaration.decorators) {
-            for (const decorator of typeDeclaration.decorators) {
-              this.traverse(visitor, decorator, context);
-            }
-          }
-          if (typeDeclaration.typeParameters) {
-            for (const typeParameter of typeDeclaration.typeParameters) {
-              this.traverse(visitor, typeParameter, context);
-            }
-          }
-          this.exit(visitor.typeDeclaration, typeDeclaration, context);
-          break;
-        }
-
-        case NodeKind.VARIABLE: {
-          const variableStatement = node as VariableStatement;
-          this.enter(visitor.variableStatement, variableStatement, context);
-          if (variableStatement.decorators) {
-            for (const decorator of variableStatement.decorators) {
-              this.traverse(visitor, decorator, context);
-            }
-          }
-          for (const declaration of variableStatement.declarations) {
-            this.traverse(visitor, declaration, context);
-          }
-          this.exit(visitor.variableStatement, variableStatement, context);
-          break;
-        }
-
-        case NodeKind.VARIABLEDECLARATION: {
-          const variableDeclaration = node as VariableDeclaration;
-          this.enter(visitor.variableDeclaration, variableDeclaration, context);
-          this.traverse(visitor, variableDeclaration.name, context);
-          if (variableDeclaration.type)
-            this.traverse(visitor, variableDeclaration.type, context);
-          if (variableDeclaration.initializer)
-            this.traverse(visitor, variableDeclaration.initializer, context);
-          this.exit(visitor.variableDeclaration, variableDeclaration, context);
-          break;
-        }
-
-        case NodeKind.WHILE: {
-          const whileStatement = node as WhileStatement;
-          this.enter(visitor.whileStatement, whileStatement, context);
-          this.traverse(visitor, whileStatement.condition, context);
-          this.traverse(visitor, whileStatement.statement, context);
-          this.exit(visitor.whileStatement, whileStatement, context);
-          break;
-        }
-
-        default:
-          throw new TypeError("Invalid node type.");
       }
       this.exit(visitor.statement, node, context);
       return;

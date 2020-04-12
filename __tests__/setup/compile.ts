@@ -1,18 +1,16 @@
-import { compileString } from "assemblyscript/cli/asc";
-import { IVisitorObject } from "../../src";
-import SetupTransform from "./transform";
+import { IVisitorObject, Visitor } from "../../src";
+import { Parser, Program } from "assemblyscript";
 
 export function compile(
   source: string,
   visitor: Partial<IVisitorObject>,
 ): void {
-  SetupTransform.MockTransformObject = visitor;
-  compileString(
-    {
-      "test.ts": source,
-    },
-    {
-      transform: [require.resolve("./transform.ts")],
-    },
-  );
+  const program = {
+    sources: [],
+    diagnostics: [],
+  } as unknown as Program;
+  const parser = new Parser(program);
+  parser.parseFile(source, "source.ts", true);
+  const visitorInstance = new Visitor();
+  visitorInstance.traverse(visitor, parser.currentSource);
 }
