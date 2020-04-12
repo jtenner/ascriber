@@ -884,8 +884,7 @@ export class Visitor {
                 context,
               );
               for (const value of arrayLiteralExpression.elementExpressions) {
-                if (value) 
-                  this.traverse(visitor, value, context);
+                if (value) this.traverse(visitor, value, context);
               }
               this.exit(
                 visitor.arrayLiteralExpression,
@@ -967,7 +966,7 @@ export class Visitor {
             default:
               throw new TypeError("Invalid literal kind.");
           }
-  
+
           this.exit(visitor.literalExpression, literalExpression, context);
           break;
         }
