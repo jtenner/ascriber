@@ -68,12 +68,12 @@ import {
   TypeName,
   TypeNode,
   TypeParameterNode,
+  UnaryExpression,
+  UnaryPostfixExpression,
+  UnaryPrefixExpression,
   VariableDeclaration,
   VariableStatement,
   WhileStatement,
-  UnaryExpression,
-  UnaryPrefixExpression,
-  UnaryPostfixExpression,
 } from "assemblyscript";
 import { VisitorContext } from "./VisitorContext";
 
@@ -157,12 +157,12 @@ export interface IVisitorObject {
   typeName: VisitorPattern<TypeName>;
   typeNode: VisitorPattern<TypeNode>;
   typeParameterNode: VisitorPattern<TypeParameterNode>;
+  unaryExpression: VisitorPattern<UnaryExpression>;
+  unaryPostfixExpression: VisitorPattern<UnaryPostfixExpression>;
+  unaryPrefixExpression: VisitorPattern<UnaryPrefixExpression>;
   variableDeclaration: VisitorPattern<VariableDeclaration>;
   variableStatement: VisitorPattern<VariableStatement>;
   whileStatement: VisitorPattern<WhileStatement>;
-  unaryExpression: VisitorPattern<UnaryExpression>;
-  unaryPrefixExpression: VisitorPattern<UnaryPrefixExpression>;
-  unaryPostfixExpression: VisitorPattern<UnaryPostfixExpression>;
 }
 
 export class Visitor {
@@ -780,7 +780,6 @@ export class Visitor {
         }
 
         case NodeKind.BINARY: {
-          console.log("Hit!");
           const binaryExpression = node as BinaryExpression;
           this.enter(visitor.binaryExpression, binaryExpression, context);
           this.traverse(visitor, binaryExpression.left, context);
