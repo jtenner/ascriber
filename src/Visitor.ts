@@ -682,7 +682,6 @@ export class Visitor {
       this.exit(visitor.statement, node, context);
       return;
     } else if (node instanceof Expression) {
-      console.log(NodeKind[node.kind]);
       this.enter(visitor.expression, node, context);
       switch (node.kind) {
         case NodeKind.TRUE: {
@@ -757,7 +756,6 @@ export class Visitor {
 
         case NodeKind.IDENTIFIER: {
           const identifierExpression = node as IdentifierExpression;
-          console.log(identifierExpression.text);
           this.enter(
             visitor.identifierExpression,
             identifierExpression,
@@ -884,6 +882,10 @@ export class Visitor {
                 arrayLiteralExpression,
                 context,
               );
+              for (const value of arrayLiteralExpression.elementExpressions) {
+                if (value) 
+                  this.traverse(visitor, value, context);
+              }
               this.exit(
                 visitor.arrayLiteralExpression,
                 arrayLiteralExpression,
@@ -964,6 +966,7 @@ export class Visitor {
             default:
               throw new TypeError("Invalid literal kind.");
           }
+  
           this.exit(visitor.literalExpression, literalExpression, context);
           break;
         }
