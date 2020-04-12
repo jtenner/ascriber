@@ -4,29 +4,27 @@ import { createVisitorPattern } from "./setup/createVisitorPattern";
 const visitor = {
   arrayLiteralExpression: createVisitorPattern(),
   literalExpression: createVisitorPattern(),
+  expression: createVisitorPattern(),
+  expressionStatement: createVisitorPattern(),
 };
 
-compile(`export let a = [1, 2, 3, 4];`, visitor);
+compile(`[];`, visitor);
 
 describe("ArrayLiteral", () => {
   test("arrayLiteralExpression", () => {
     expect(visitor.arrayLiteralExpression.enter).toBeCalledTimes(1);
     expect(visitor.arrayLiteralExpression.exit).toBeCalledTimes(1);
-    expect(
-      visitor.arrayLiteralExpression.enter.mock.calls[0],
-    ).toMatchInlineSnapshot();
-    expect(
-      visitor.arrayLiteralExpression.exit.mock.calls[0],
-    ).toMatchInlineSnapshot();
   });
   test("literalExpression", () => {
     expect(visitor.literalExpression.enter).toBeCalledTimes(1);
     expect(visitor.literalExpression.exit).toBeCalledTimes(1);
-    expect(
-      visitor.literalExpression.enter.mock.calls[0],
-    ).toMatchInlineSnapshot();
-    expect(
-      visitor.literalExpression.exit.mock.calls[0],
-    ).toMatchInlineSnapshot();
+  });
+  test("expression", () => {
+    expect(visitor.expression.enter).toBeCalledTimes(1);
+    expect(visitor.expression.exit).toBeCalledTimes(1);
+  });
+  test("expressionStatement", () => {
+    expect(visitor.expressionStatement.enter).toBeCalledTimes(1);
+    expect(visitor.expressionStatement.exit).toBeCalledTimes(1);
   });
 });

@@ -174,7 +174,6 @@ export class Visitor {
     parentContext: VisitorContext<T> | null = null,
   ): void {
     const context = new VisitorContext(node, parentContext);
-
     if (node.kind === NodeKind.SOURCE) {
       for (const statement of (node as Source).statements) {
         this.traverse(visitor, statement, context);
@@ -683,6 +682,7 @@ export class Visitor {
       this.exit(visitor.statement, node, context);
       return;
     } else if (node instanceof Expression) {
+      console.log(NodeKind[node.kind]);
       this.enter(visitor.expression, node, context);
       switch (node.kind) {
         case NodeKind.TRUE: {
@@ -757,6 +757,7 @@ export class Visitor {
 
         case NodeKind.IDENTIFIER: {
           const identifierExpression = node as IdentifierExpression;
+          console.log(identifierExpression.text);
           this.enter(
             visitor.identifierExpression,
             identifierExpression,

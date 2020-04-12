@@ -7,7 +7,9 @@ class SetupTransform extends Transform {
   afterParse(parser: Parser): void {
     const visitor = new Visitor();
     for (const source of parser.program.sources) {
-      visitor.traverse(SetupTransform.MockTransformObject, source);
+      if (source.normalizedPath.endsWith("test.ts")) {
+        visitor.traverse(SetupTransform.MockTransformObject, source);
+      }
     }
   }
 }
