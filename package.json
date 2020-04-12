@@ -1,0 +1,38 @@
+{
+  "name": "ascriber",
+  "version": "0.0.1",
+  "description": "babel-like ast transformations for assemblyscript",
+  "main": "lib/index.js",
+  "scripts": {
+    "prettier": "prettier --write .",
+    "tsc": "tsc",
+    "build": "run-s prettier tsc",
+    "test": "run-s build jest",
+    "jest": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jtenner/ascriber.git"
+  },
+  "keywords": [
+    "ast",
+    "assemblyscript",
+    "webassembly"
+  ],
+  "author": "Joshua Tenner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jtenner/ascriber/issues"
+  },
+  "homepage": "https://github.com/jtenner/ascriber#readme",
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.11.1",
+    "assemblyscript": "0.9.4-nightly.20200411",
+    "jest": "^25.2.7",
+    "prettier": "^2.0.4",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^25.3.1",
+    "typescript": "^3.9.0-beta"
+  }
+}
