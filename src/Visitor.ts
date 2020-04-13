@@ -426,7 +426,7 @@ export class Visitor {
             this.exit(visitor.typeDeclaration, typeDeclaration, context);
             break;
           }
-  
+
           case NodeKind.VARIABLEDECLARATION: {
             const variableDeclaration = node as VariableDeclaration;
             this.enter(
@@ -1003,7 +1003,9 @@ export class Visitor {
               break;
             }
             default:
-              throw new TypeError("Invalid literal kind:" + NodeKind[node.kind]);
+              throw new TypeError(
+                "Invalid literal kind:" + NodeKind[node.kind],
+              );
           }
 
           this.exit(visitor.literalExpression, literalExpression, context);
