@@ -4,10 +4,11 @@
   "description": "Babel-like ast transformations for AssemblyScript",
   "main": "lib/index.js",
   "scripts": {
-    "prettier": "prettier --write .",
+    "prettier:write": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "tsc": "tsc",
-    "build": "run-s prettier tsc",
-    "test": "run-s build jest",
+    "build": "run-s prettier:write tsc",
+    "test": "run-s prettier:check jest",
     "jest": "jest --clearCache && jest",
     "pre-commit": "run-s test"
   },
