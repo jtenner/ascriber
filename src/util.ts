@@ -1,12 +1,28 @@
-import { Parser, Program } from "assemblyscript";
+import { Parser, Program, Source, Expression } from "assemblyscript";
 import { IVisitorObject, Visitor } from "./Visitor";
 
-export function visit(source: string, query: Partial<IVisitorObject>): void {
+export interface ITemplateObject {
+  [name: string]: Expression;
+}
+
+export function visit(source: string, query: Partial<IVisitorObject>): Source {
+  const visitor = new Visitor();
+  const result = parse(source);
+  visitor.traverse(query, result);
+  return result;
+}
+
+export function parse(source: string): Source {
   const parser = new Parser(({
     diagnostics: [],
     sources: [],
   } as unknown) as Program);
   parser.parseFile(source, "source.ts", true);
-  const visitor = new Visitor();
-  visitor.traverse(query, parser.currentSource);
+  return parser.currentSource;
 }
+
+/*
+export function template(source: string, templateObject: ITemplateObject): Source {
+
+}
+*/
