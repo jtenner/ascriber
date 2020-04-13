@@ -212,7 +212,7 @@ export class Visitor {
         }
 
         default:
-          throw new TypeError("Invalid node type.");
+          throw new TypeError("Invalid node type: " + NodeKind[node.kind]);
       }
       this.exit(visitor.typeNode, node as TypeNode, context);
       return;
@@ -426,9 +426,29 @@ export class Visitor {
             this.exit(visitor.typeDeclaration, typeDeclaration, context);
             break;
           }
+  
+          case NodeKind.VARIABLEDECLARATION: {
+            const variableDeclaration = node as VariableDeclaration;
+            this.enter(
+              visitor.variableDeclaration,
+              variableDeclaration,
+              context,
+            );
+            this.traverse(visitor, variableDeclaration.name, context);
+            if (variableDeclaration.type)
+              this.traverse(visitor, variableDeclaration.type, context);
+            if (variableDeclaration.initializer)
+              this.traverse(visitor, variableDeclaration.initializer, context);
+            this.exit(
+              visitor.variableDeclaration,
+              variableDeclaration,
+              context,
+            );
+            break;
+          }
 
           default:
-            throw new TypeError("Invalid node type.");
+            throw new TypeError("Invalid node type: " + NodeKind[node.kind]);
         }
         this.exit(visitor.declarationStatement, node, context);
       } else {
@@ -686,26 +706,6 @@ export class Visitor {
             break;
           }
 
-          case NodeKind.VARIABLEDECLARATION: {
-            const variableDeclaration = node as VariableDeclaration;
-            this.enter(
-              visitor.variableDeclaration,
-              variableDeclaration,
-              context,
-            );
-            this.traverse(visitor, variableDeclaration.name, context);
-            if (variableDeclaration.type)
-              this.traverse(visitor, variableDeclaration.type, context);
-            if (variableDeclaration.initializer)
-              this.traverse(visitor, variableDeclaration.initializer, context);
-            this.exit(
-              visitor.variableDeclaration,
-              variableDeclaration,
-              context,
-            );
-            break;
-          }
-
           case NodeKind.WHILE: {
             const whileStatement = node as WhileStatement;
             this.enter(visitor.whileStatement, whileStatement, context);
@@ -716,7 +716,7 @@ export class Visitor {
           }
 
           default:
-            throw new TypeError("Invalid node type.");
+            throw new TypeError("Invalid node type: " + NodeKind[node.kind]);
         }
       }
       this.exit(visitor.statement, node, context);
@@ -1003,7 +1003,7 @@ export class Visitor {
               break;
             }
             default:
-              throw new TypeError("Invalid literal kind.");
+              throw new TypeError("Invalid literal kind:" + NodeKind[node.kind]);
           }
 
           this.exit(visitor.literalExpression, literalExpression, context);
@@ -1111,7 +1111,7 @@ export class Visitor {
         }
 
         default:
-          throw new TypeError("Invalid node kind.");
+          throw new TypeError("Invalid node kind:" + NodeKind[node.kind]);
       }
       this.exit(visitor.expression, node, context);
       return;
@@ -1191,7 +1191,7 @@ export class Visitor {
         }
 
         default:
-          throw new TypeError("Invalid node type.");
+          throw new TypeError("Invalid node type:" + NodeKind[node.kind]);
       }
     }
   }
