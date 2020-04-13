@@ -292,6 +292,29 @@ export class Visitor {
             break;
           }
 
+          case NodeKind.ENUMVALUEDECLARATION: {
+            const enumValueDeclaration = node as EnumValueDeclaration;
+            this.enter(
+              visitor.enumValueDeclaration,
+              enumValueDeclaration,
+              context,
+            );
+            this.traverse(visitor, enumValueDeclaration.name, context);
+            // todo: remove this
+            if (enumValueDeclaration.value) {
+              this.traverse(visitor, enumValueDeclaration.value, context);
+            }
+            if (enumValueDeclaration.initializer) {
+              this.traverse(visitor, enumValueDeclaration.initializer, context);
+            }
+            this.exit(
+              visitor.enumValueDeclaration,
+              enumValueDeclaration,
+              context,
+            );
+            break;
+          }
+
           case NodeKind.FUNCTIONDECLARATION: {
             const functionDeclaration = node as FunctionDeclaration;
             this.enter(
@@ -507,24 +530,6 @@ export class Visitor {
             const emptyStatement = node as EmptyStatement;
             this.enter(visitor.emptyStatement, emptyStatement, context);
             this.exit(visitor.emptyStatement, emptyStatement, context);
-            break;
-          }
-
-          case NodeKind.ENUMVALUEDECLARATION: {
-            const enumValueDeclaration = node as EnumValueDeclaration;
-            this.enter(
-              visitor.enumValueDeclaration,
-              enumValueDeclaration,
-              context,
-            );
-            this.traverse(visitor, enumValueDeclaration.name, context);
-            if (enumValueDeclaration.initializer)
-              this.traverse(visitor, enumValueDeclaration.initializer, context);
-            this.exit(
-              visitor.enumValueDeclaration,
-              enumValueDeclaration,
-              context,
-            );
             break;
           }
 
