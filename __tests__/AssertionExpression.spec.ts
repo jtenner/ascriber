@@ -1,10 +1,9 @@
-import { compile } from "./setup/compile";
 import {
   createVisitorPattern,
   IVisitorMock,
 } from "./setup/createVisitorPattern";
 import { AssertionExpression } from "assemblyscript";
-import { VisitorContext } from "../src";
+import { VisitorContext, visit } from "../src";
 
 const visitor: IVisitorMock = {
   arrayLiteralExpression: createVisitorPattern(),
@@ -14,7 +13,7 @@ const visitor: IVisitorMock = {
   expressionStatement: createVisitorPattern(),
 };
 
-compile(`[1, 2, 3] as StaticArray<i32>;`, visitor);
+visit(`[1, 2, 3] as StaticArray<i32>;`, visitor);
 
 describe("AssertionExpression", () => {
   test("assertionExpression", () => {

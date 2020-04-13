@@ -1,10 +1,9 @@
-import { compile } from "./setup/compile";
 import {
   createVisitorPattern,
   IVisitorMock,
 } from "./setup/createVisitorPattern";
 import { ClassDeclaration } from "assemblyscript";
-import { VisitorContext } from "../src";
+import { VisitorContext, visit } from "../src";
 
 const visitor: IVisitorMock = {
   statement: createVisitorPattern(),
@@ -14,7 +13,7 @@ const visitor: IVisitorMock = {
   identifierExpression: createVisitorPattern(),
 };
 
-compile(`class A {}`, visitor);
+visit(`class A {}`, visitor);
 
 describe("ClassDeclaration", () => {
   test("classDeclaration", () => {

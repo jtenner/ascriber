@@ -1,10 +1,9 @@
-import { compile } from "./setup/compile";
 import {
   createVisitorPattern,
   IVisitorMock,
 } from "./setup/createVisitorPattern";
 import { ArrayLiteralExpression } from "assemblyscript";
-import { VisitorContext } from "../src";
+import { VisitorContext, visit } from "../src";
 
 const visitor: IVisitorMock = {
   arrayLiteralExpression: createVisitorPattern(),
@@ -13,7 +12,7 @@ const visitor: IVisitorMock = {
   expressionStatement: createVisitorPattern(),
 };
 
-compile(`[];`, visitor);
+visit(`[];`, visitor);
 
 describe("ArrayLiteral", () => {
   test("arrayLiteralExpression", () => {

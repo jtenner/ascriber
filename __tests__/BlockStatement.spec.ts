@@ -1,17 +1,16 @@
-import { compile } from "./setup/compile";
 import {
   createVisitorPattern,
   IVisitorMock,
 } from "./setup/createVisitorPattern";
 import { BlockStatement } from "assemblyscript";
-import { VisitorContext } from "../src";
+import { VisitorContext, visit } from "../src";
 
 const visitor: IVisitorMock = {
   statement: createVisitorPattern(),
   blockStatement: createVisitorPattern(),
 };
 
-compile(`{}`, visitor);
+visit(`{}`, visitor);
 
 describe("BlockStatement", () => {
   test("blockStatement", () => {

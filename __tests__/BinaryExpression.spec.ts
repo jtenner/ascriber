@@ -1,10 +1,9 @@
-import { compile } from "./setup/compile";
 import {
   createVisitorPattern,
   IVisitorMock,
 } from "./setup/createVisitorPattern";
 import { BinaryExpression } from "assemblyscript";
-import { VisitorContext } from "../src";
+import { VisitorContext, visit } from "../src";
 
 const visitor: IVisitorMock = {
   binaryExpression: createVisitorPattern(),
@@ -13,7 +12,7 @@ const visitor: IVisitorMock = {
   expressionStatement: createVisitorPattern(),
 };
 
-compile(`1 + 2;`, visitor);
+visit(`1 + 2;`, visitor);
 
 describe("BinayExpressions", () => {
   test("binaryExpression", () => {

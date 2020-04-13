@@ -1,10 +1,9 @@
-import { compile } from "./setup/compile";
 import {
   createVisitorPattern,
   IVisitorMock,
 } from "./setup/createVisitorPattern";
 import { CallExpression } from "assemblyscript";
-import { VisitorContext } from "../src";
+import { VisitorContext, visit } from "../src";
 
 const visitor: IVisitorMock = {
   callExpression: createVisitorPattern(),
@@ -15,7 +14,7 @@ const visitor: IVisitorMock = {
   statement: createVisitorPattern(),
 };
 
-compile(`trace("Hello world");`, visitor);
+visit(`trace("Hello world");`, visitor);
 
 describe("CallExpression", () => {
   test("callExpression", () => {
