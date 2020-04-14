@@ -14,11 +14,7 @@ export function visit(source: string, query: Partial<IVisitorObject>): Source {
 }
 
 export function parse(source: string): Source {
-  const diagnostics = {
-    diagnostics: [],
-    sources: [],
-  } as any;
-  const parser = new Parser(diagnostics);
+  const parser = new Parser();
   parser.parseFile(source, "source.ts", true);
   return parser.currentSource;
 }

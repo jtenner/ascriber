@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/jest": "^25.2.1",
     "@types/node": "^13.11.1",
-    "assemblyscript": "0.9.4-nightly.20200411",
+    "assemblyscript": "0.9.4-nightly.20200414",
     "husky": "^4.2.5",
     "jest": "^25.3.0",
     "prettier": "^2.0.4",

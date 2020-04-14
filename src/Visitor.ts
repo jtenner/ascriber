@@ -300,10 +300,6 @@ export class Visitor {
               context,
             );
             this.traverse(visitor, enumValueDeclaration.name, context);
-            // todo: remove this
-            if (enumValueDeclaration.value) {
-              this.traverse(visitor, enumValueDeclaration.value, context);
-            }
             if (enumValueDeclaration.initializer) {
               this.traverse(visitor, enumValueDeclaration.initializer, context);
             }
