@@ -311,6 +311,23 @@ export class Visitor {
             break;
           }
 
+          case NodeKind.FIELDDECLARATION: {
+            const fieldDeclaration = node as FieldDeclaration;
+            this.enter(visitor.fieldDeclaration, fieldDeclaration, context);
+            this.traverse(visitor, fieldDeclaration.name, context);
+            if (fieldDeclaration.type)
+              this.traverse(visitor, fieldDeclaration.type, context);
+            if (fieldDeclaration.initializer)
+              this.traverse(visitor, fieldDeclaration.initializer, context);
+            if (fieldDeclaration.decorators) {
+              for (const decorator of fieldDeclaration.decorators) {
+                this.traverse(visitor, decorator, context);
+              }
+            }
+            this.exit(visitor.fieldDeclaration, fieldDeclaration, context);
+            break;
+          }
+
           case NodeKind.FUNCTIONDECLARATION: {
             const functionDeclaration = node as FunctionDeclaration;
             this.enter(
@@ -597,23 +614,6 @@ export class Visitor {
             this.traverse(visitor, forOfStatement.variable, context);
             this.traverse(visitor, forOfStatement.statement, context);
             this.exit(visitor.forOfStatement, forOfStatement, context);
-            break;
-          }
-
-          case NodeKind.FIELDDECLARATION: {
-            const fieldDeclaration = node as FieldDeclaration;
-            this.enter(visitor.fieldDeclaration, fieldDeclaration, context);
-            this.traverse(visitor, fieldDeclaration.name, context);
-            if (fieldDeclaration.type)
-              this.traverse(visitor, fieldDeclaration.type, context);
-            if (fieldDeclaration.initializer)
-              this.traverse(visitor, fieldDeclaration.initializer, context);
-            if (fieldDeclaration.decorators) {
-              for (const decorator of fieldDeclaration.decorators) {
-                this.traverse(visitor, decorator, context);
-              }
-            }
-            this.exit(visitor.fieldDeclaration, fieldDeclaration, context);
             break;
           }
 
