@@ -1136,8 +1136,12 @@ export class Visitor {
         case NodeKind.EXPORTMEMBER: {
           const exportMember = node as ExportMember;
           this.enter(visitor.exportMember, exportMember, context);
-          this.traverse(visitor, exportMember.localName, context);
-          this.traverse(visitor, exportMember.exportedName, context);
+          if (exportMember.localName == exportMember.exportedName) {
+            this.traverse(visitor, exportMember.localName, context);
+          } else {
+            this.traverse(visitor, exportMember.localName, context);
+            this.traverse(visitor, exportMember.exportedName, context);
+          }
           this.exit(visitor.exportMember, exportMember, context);
           return;
         }
