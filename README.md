@@ -1,6 +1,6 @@
 # ascriber
 
-Babel-like transforms for your assemblyscript modules.
+Babel-like transforms for your AssemblyScript modules.
 
 ## Example
 
@@ -13,23 +13,27 @@ class MyTransform extends Transform {
   afterParse(parser: Parser): void {
     const visitor = new Visitor();
     for (const source of parser.program.sources) {
-      visitor.visit({
-        stringLiteralExpression(
-          expr: StringLiteralExpression,
-          context: VisitorContext<StringLiteralExpression>): void {
-          // reverse the string!
-          expr.value = expr.value.split("").reverse().join("");
+      visitor.visit(
+        {
+          stringLiteralExpression(
+            expr: StringLiteralExpression,
+            context: VisitorContext<StringLiteralExpression>,
+          ): void {
+            // reverse the string!
+            expr.value = expr.value.split("").reverse().join("");
 
-          // visit the parent
-          const parent = context.parentContext.node;
+            // visit the parent
+            const parent = context.parentContext.node;
 
-          // eventually will be supported:
-          context.replaceNode(someNode);
+            // eventually will be supported:
+            context.replaceNode(someNode);
 
-          // eventually will be supported
-          context.removeNode();
-        }
-      }, source);
+            // eventually will be supported
+            context.removeNode();
+          },
+        },
+        source,
+      );
     }
   }
 }

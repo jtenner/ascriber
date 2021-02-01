@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cliOutput: invalid code 1`] = `1`;
+
+exports[`cliOutput: invalid stderr 1`] = `
+"Unknown cli option: [31m--invalid[39m
+"
+`;
+
+exports[`cliOutput: invalid stdout 1`] = `
+"ascriber cli version 0.0.1
+"
+`;
+
+exports[`cliOutput: long help code 1`] = `0`;
+
+exports[`cliOutput: long help stderr 1`] = `""`;
+
+exports[`cliOutput: long help stdout 1`] = `
+"ascriber cli version 0.0.1
+
+  --help, -h            Show this help screen.
+"
+`;
+
+exports[`cliOutput: short help code 1`] = `0`;
+
+exports[`cliOutput: short help stderr 1`] = `""`;
+
+exports[`cliOutput: short help stdout 1`] = `
+"ascriber cli version 0.0.1
+
+  --help, -h            Show this help screen.
+"
+`;
